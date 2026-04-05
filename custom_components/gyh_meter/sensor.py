@@ -16,7 +16,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     meter_id = config_entry.data[CONF_METER_ID]
     openid = config_entry.data[CONF_OPENID]
     
-    # 优先读取用户在配置页面随时修改的刷新时间
     update_interval_hours = config_entry.options.get(
         CONF_UPDATE_INTERVAL, 
         config_entry.data.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
@@ -26,9 +25,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     await coordinator.async_config_entry_first_refresh()
 
     async_add_entities([
-        GYHSensor(coordinator, "shengyu", "剩余电量", SensorDeviceClass.ENERGY, SensorStateClass.TOTAL),
-        GYHSensor(coordinator, "leiji", "累计用电", SensorDeviceClass.ENERGY, SensorStateClass.TOTAL_INCREASING),
-        GYHPriceSensor(meter_id) # 新增的固定电费 0.9 元实体
+        GYHSensor(coordinator, "shengyu", "剩余电量", "mdi:lightning-bolt", SensorDeviceClass.ENERGY, SensorStateClass.TOTAL),
+        GYHSensor(coordinator, "leiji", "累计用电", "mdi:chart-bell-curve-cumulative", SensorDeviceClass.ENERGY, SensorStateClass.TOTAL_INCREASING),
+        GYHPriceSensor(meter_id)
     ])
 
 class GYHMeterCoordinator(DataUpdateCoordinator):
@@ -59,11 +58,13 @@ class GYHMeterCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(str(err))
 
 class GYHSensor(CoordinatorEntity, SensorEntity):
-    def __init__(self, coordinator, key, name, device_class, state_class):
+    def __init__(self, coordinator, key, name, icon, device_class, state_class):
         super().__init__(coordinator)
-        self.key, self._attr_name = key, f"{coordinator.meter_id} {name}"
+        self.key = key
+        self._attr_name = f"{coordinator.meter_id} {name}"
         self._attr_unique_id = f"gyh_{coordinator.meter_id}_{key}"
         self._attr_native_unit_of_measurement = "kWh"
+        self._attr_icon = icon  # 引入原生图标
         self._attr_device_class = device_class
         self._attr_state_class = state_class
 
@@ -73,12 +74,11 @@ class GYHSensor(CoordinatorEntity, SensorEntity):
         except (TypeError, ValueError): return None
 
 class GYHPriceSensor(SensorEntity):
-    """固定的电费单价实体"""
     def __init__(self, meter_id):
         self._attr_name = f"{meter_id} 电费单价"
         self._attr_unique_id = f"gyh_{meter_id}_price"
-        self._attr_native_unit_of_measurement = "CNY/kWh" # 标准费用单位
-        self._attr_icon = "mdi:currency-cny" # 人民币图标
+        self._attr_native_unit_of_measurement = "CNY/kWh" 
+        self._attr_icon = "mdi:currency-cny" # 原生人民币图标
         self._attr_device_class = SensorDeviceClass.MONETARY
 
     @property
