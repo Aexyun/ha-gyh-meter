@@ -16,19 +16,25 @@ class GYHMeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input=None):
         errors = {}
         if user_input is not None:
-            valid = await self._test_credentials(
-                user_input[CONF_WECHAT_USER_ID],
-                user_input[CONF_METER_ID],
-                user_input[CONF_OPENID]
-            )
-            if valid:
-                return self.async_create_entry(
-                    title=f"公元汇电表 ({user_input[CONF_METER_ID]})",
-                    data=user_input
-                )
-            else:
+            # 1. 拦截空字符串输入
+            if not user_input[CONF_WECHAT_USER_ID] or not user_input[CONF_METER_ID] or not user_input[CONF_OPENID]:
                 errors["base"] = "invalid_auth"
+            else:
+                # 2. 去服务器验证真实性
+                valid = await self._test_credentials(
+                    user_input[CONF_WECHAT_USER_ID],
+                    user_input[CONF_METER_ID],
+                    user_input[CONF_OPENID]
+                )
+                if valid:
+                    return self.async_create_entry(
+                        title=f"公元汇电表 ({user_input[CONF_METER_ID]})",
+                        data=user_input
+                    )
+                else:
+                    errors["base"] = "invalid_auth"
 
+        # 表单结构：移除了你的真实数据默认值，强迫用户手打
         data_schema = vol.Schema({
             vol.Required(CONF_WECHAT_USER_ID): str,
             vol.Required(CONF_METER_ID): str,
