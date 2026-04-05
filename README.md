@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/你的GitHub用户名/ha-gyh-meter/main/custom_components/gyh_meter/brand/logo.png" width="100%">
+  <img src="https://raw.githubusercontent.com/aexyun/ha-gyh-meter/main/custom_components/gyh_meter/brand/logo.png" width="100%">
 </p>
 # 公元汇电费余额查询 (GYH Meter)
 
