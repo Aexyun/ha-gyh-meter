@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/aexyun/ha-gyh-meter/main/custom_components/gyh_meter/brand/logo.png" width="100%">
 </p>
-# 公元汇电费余额查询 (GYH Meter)
+## 公元汇电费余额查询 (GYH Meter)
 
 Home Assistant 自定义集成，用于实时抓取并展示“公元汇”物业系统（或同类微服务平台）的电表剩余金额与累计用电量。
 
