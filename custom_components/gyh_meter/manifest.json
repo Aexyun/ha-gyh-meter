@@ -1,0 +1,11 @@
+{
+  "domain": "gyh_meter",
+  "name": "公元汇电费余额查询",
+  "config_flow": true,
+  "documentation": "https://github.com",
+  "dependencies": [],
+  "codeowners": [],
+  "requirements": [],
+  "version": "2.0.0",
+  "iot_class": "cloud_polling"
+}

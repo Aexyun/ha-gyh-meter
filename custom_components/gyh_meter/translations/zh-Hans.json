@@ -1,0 +1,34 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "配置公元汇电费查询",
+        "description": "请填写抓包获取的电表参数。\n\n**如何获取关键数据？**\n1. 在微信中打开电费查询页并抓包。\n2. 找到 `electricMeterQuery` 的 POST 请求。\n3. 在它的 **请求体(Payload)** 中复制 `wechatUserId` 和 `electricUserUid`。\n4. `OpenID` 可以在前置的页面网址链接中找到。",
+        "data": {
+          "wechat_user_id": "微信用户ID (wechatUserId, 如 1234)",
+          "meter_id": "电表ID (electricUserUid, 如 B1111)",
+          "openid": "微信OpenID (oxxxx...)",
+          "update_interval": "数据刷新频率 (小时)"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "❌ 验证失败！请检查参数是否填写正确，或确保抓包数据未过期。",
+      "cannot_connect": "❌ 无法连接到物业服务器，请检查网络。"
+    },
+    "abort": {
+      "already_configured": "该电表已被配置过了"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "修改更新频率",
+        "description": "随时调整电费数据的自动抓取频率（建议不要过于频繁，以防被封禁）。",
+        "data": {
+          "update_interval": "刷新时间 (小时)"
+        }
+      }
+    }
+  }
+}
