@@ -1,0 +1,5 @@
+{
+  "name": "公元汇电费余额查询",
+  "render_readme": true,
+  "iot_class": "Cloud Polling"
+}
