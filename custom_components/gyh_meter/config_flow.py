@@ -16,11 +16,10 @@ class GYHMeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input=None):
         errors = {}
         if user_input is not None:
-            # 1. 拦截空字符串输入
-            if not user_input[CONF_WECHAT_USER_ID] or not user_input[CONF_METER_ID] or not user_input[CONF_OPENID]:
+            # 确保必填字段不为空
+            if not user_input.get(CONF_WECHAT_USER_ID) or not user_input.get(CONF_METER_ID) or not user_input.get(CONF_OPENID):
                 errors["base"] = "invalid_auth"
             else:
-                # 2. 去服务器验证真实性
                 valid = await self._test_credentials(
                     user_input[CONF_WECHAT_USER_ID],
                     user_input[CONF_METER_ID],
@@ -34,12 +33,12 @@ class GYHMeterConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 else:
                     errors["base"] = "invalid_auth"
 
-        # 表单结构：移除了你的真实数据默认值，强迫用户手打
+        # 修复点 1：移除复杂的校验器，直接使用标准 int
         data_schema = vol.Schema({
             vol.Required(CONF_WECHAT_USER_ID): str,
             vol.Required(CONF_METER_ID): str,
             vol.Required(CONF_OPENID): str,
-            vol.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL): vol.All(vol.Coerce(int), vol.Range(min=1))
+            vol.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL): int
         })
 
         return self.async_show_form(step_id="user", data_schema=data_schema, errors=errors)
@@ -81,7 +80,9 @@ class GYHMeterOptionsFlowHandler(config_entries.OptionsFlow):
             self.config_entry.data.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
         )
 
+        # 修复点 2：直接使用标准 int，确保前端 UI 可以正常渲染出数字输入框
         options_schema = vol.Schema({
-            vol.Required(CONF_UPDATE_INTERVAL, default=current_interval): vol.All(vol.Coerce(int), vol.Range(min=1))
+            vol.Required(CONF_UPDATE_INTERVAL, default=current_interval): int
         })
+        
         return self.async_show_form(step_id="init", data_schema=options_schema)
